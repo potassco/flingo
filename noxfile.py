@@ -46,11 +46,11 @@ def lint_flake8(session):
 
 @nox.session
 def lint_pylint(session):
-    session.install("-r", f"requirements.txt", "pylint")
+    session.install("-e", ".", "pylint")
     session.run("pylint", "flingo")
 
 
 @nox.session(python=PYTHON_VERSIONS)
 def test(session):
-    session.install("-r", f"requirements.txt")
+    session.install("-e", ".")
     session.run("python", "-m", "unittest", "discover", "-v")
