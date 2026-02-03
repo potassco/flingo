@@ -9,9 +9,9 @@ import clingo
 from clingcon import ClingconTheory
 from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_files
 
-from fclingo import THEORY, translator
-from fclingo.parsing import HeadBodyTransformer
-from fclingo.translator import AUX, Translator
+from flingo import THEORY, translator
+from flingo.parsing import HeadBodyTransformer
+from flingo.translator import AUX, Translator
 
 MAX_INT = 1073741823
 MIN_INT = -1073741823
@@ -21,7 +21,7 @@ DEF = "__def"
 
 class Statistic:
     """
-    Class for statistics of fclingo translation.
+    Class for statistics of flingo translation.
     """
 
     def __init__(self):
@@ -45,14 +45,14 @@ class AppConfig:
         self.defined = defined
 
 
-class FclingoApp(clingo.Application):
+class flingoApp(clingo.Application):
     """
     Application class that can be used with `clingo.clingo_main` to solve AMT
     problems.
     """
 
     def __init__(self):
-        self.program_name = "fclingo"
+        self.program_name = "flingo"
         self.version = "0.1"
         self.config = AppConfig(
             MIN_INT, MAX_INT, clingo.Flag(False), clingo.Flag(False), DEF
@@ -120,7 +120,7 @@ class FclingoApp(clingo.Application):
 
     def register_options(self, options):
         """
-        Register fclingo related options.
+        Register flingo related options.
         """
 
         self._theory.register_options(options)
@@ -149,15 +149,15 @@ class FclingoApp(clingo.Application):
 
     def _on_statistics(self, step, akku):
         self._theory.on_statistics(step, akku)
-        akku["fclingo"] = {}
-        fclingo = akku["fclingo"]
-        fclingo["Translation time in seconds"] = {}
-        translation = fclingo["Translation time in seconds"]
+        akku["flingo"] = {}
+        flingo = akku["flingo"]
+        flingo["Translation time in seconds"] = {}
+        translation = flingo["Translation time in seconds"]
         translation["AST rewriting"] = self.stats.rewrite_ast
         translation["Translation"] = self.stats.translate_program
-        fclingo["Number of variables added"] = self.stats.variables_added
-        fclingo["Number of atoms added"] = self.stats.atoms_added
-        fclingo["Number of rules added"] = self.stats.rules_added
+        flingo["Number of variables added"] = self.stats.variables_added
+        flingo["Number of atoms added"] = self.stats.atoms_added
+        flingo["Number of rules added"] = self.stats.rules_added
         return True
 
     def _read(self, path):
@@ -207,11 +207,11 @@ class FclingoApp(clingo.Application):
 
 def main():
     """
-    Main function executing the fclingo application.
+    Main function executing the flingo application.
     """
 
     arguments = sys.argv[1:]
-    sys.exit(int(clingo.clingo_main(FclingoApp(), arguments)))
+    sys.exit(int(clingo.clingo_main(flingoApp(), arguments)))
 
 
 if __name__ == "__main__":

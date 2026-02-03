@@ -6,9 +6,9 @@ import clingo
 from clingcon import ClingconTheory
 from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_string
 
-from fclingo import THEORY, Translator
-from fclingo.__main__ import CSP, DEF, Statistic
-from fclingo.parsing import HeadBodyTransformer
+from flingo import THEORY, Translator
+from flingo.__main__ import CSP, DEF, Statistic
+from flingo.parsing import HeadBodyTransformer
 
 
 class Config:

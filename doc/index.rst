@@ -1,4 +1,4 @@
-The fclingo project
+The flingo project
 ====================
 
 An example project template.
@@ -7,4 +7,4 @@ An example project template.
    :toctree: _autosummary
    :recursive:
 
-    fclingo
+    flingo

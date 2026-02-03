@@ -1,6 +1,6 @@
-# fclingo
+# flingo
 
-fclingo is a solver for ASP modulo conditional linear constraints with founded variables.
+flingo is a solver for ASP modulo conditional linear constraints with founded variables.
 
 ## Installation
 
@@ -10,19 +10,19 @@ pip install . -r requirements.txt
 
 ## Usage
 
-fclingo is a solver for Answer Set Programming (ASP) combined with founded conditional linear constraints. These constraints enable the user to use integer variables that are not subject to grounding. Integer variables may be undefined and, in line with the philosophy of ASP, there needs to be a justification in the logic program if a variable receives a value in an answer set. Conditionality allows for a generalization of aggregates commonly used in ASP.
+flingo is a solver for Answer Set Programming (ASP) combined with founded conditional linear constraints. These constraints enable the user to use integer variables that are not subject to grounding. Integer variables may be undefined and, in line with the philosophy of ASP, there needs to be a justification in the logic program if a variable receives a value in an answer set. Conditionality allows for a generalization of aggregates commonly used in ASP.
 
 ### Relation to clingo
-fclingo is an extension of [clingo](https://github.com/potassco/clingo) and accepts as input clingo rules enriched with founded conditional linear constraints. 
+flingo is an extension of [clingo](https://github.com/potassco/clingo) and accepts as input clingo rules enriched with founded conditional linear constraints. 
 
 ### Relation to clingcon
-fclingo relies on the constraint answer set programming (CASP) solver [clingcon](https://github.com/potassco/clingo) into whose language a fclingo program is translated. fclingo's two main advantages are foundedness of the integer variables and aggregates over integer variables. The former allows variables to be undefined and only assume a value if a reason for that value can be derived. This differs to the behavior of CASP, where variables are always defined and in absence of any constraint to a variable, all possible values are enumerated. The latter generalizes ASP aggregates to contain integer variables that are not subject to grounding.
+flingo relies on the constraint answer set programming (CASP) solver [clingcon](https://github.com/potassco/clingo) into whose language a flingo program is translated. flingo's two main advantages are foundedness of the integer variables and aggregates over integer variables. The former allows variables to be undefined and only assume a value if a reason for that value can be derived. This differs to the behavior of CASP, where variables are always defined and in absence of any constraint to a variable, all possible values are enumerated. The latter generalizes ASP aggregates to contain integer variables that are not subject to grounding.
 
 ### Output
-The answer sets of fclingo programs contain terms `val(x,v)`, where `x` is an integer variable occurring in the program and `v` is the integer value of the variable in the answer set. The absence of such a term means the variable is undefined.
+The answer sets of flingo programs contain terms `val(x,v)`, where `x` is an integer variable occurring in the program and `v` is the integer value of the variable in the answer set. The absence of such a term means the variable is undefined.
 
 ### Language overview
-fclingo atoms have the following form:
+flingo atoms have the following form:
 1. `&sum{lt1 : c1;...;ltn : cn} <> l0`
 2. `&sus{lt1 : c1;...;ltn : cn} <> l0` 
 3. `&in{lb..ub} =: x`
@@ -56,7 +56,7 @@ This program configures a bike with a frame that has an optional bag. For both t
 
 Executing 
 ```shell
-fclingo examples/config_optional.lp
+flingo examples/config_optional.lp
 ```
 yields the answer sets
 ```
@@ -86,7 +86,7 @@ pricelimit(14).
 Now, the price of the bag is omitted and instead of calculating the total price, we restrict the sum over the individual prices to be 14.
 The call
 ```
-fclingo examples/config_pricelimit_sum.lp 0
+flingo examples/config_pricelimit_sum.lp 0
 ```
 returns
 ```
@@ -119,7 +119,7 @@ pricelimit(14).
 
 The call
 ```
-fclingo examples/config_pricelimit_sus.lp 0
+flingo examples/config_pricelimit_sus.lp 0
 ```
 now returns
 ```
@@ -155,7 +155,7 @@ Here, we assign selected parts that are missing the price information a default 
 Calling 
 
 ```
-fclingo examples/config_default_in.lp 0
+flingo examples/config_default_in.lp 0
 ```
 results in
 ```
@@ -195,7 +195,7 @@ first tries to calculate the price, and if this calculation has a defined outcom
 
 Calling
 ```
-fclingo examples/config_default_in.lp 0
+flingo examples/config_default_in.lp 0
 ```
 yields the intended two answer sets
 ```
@@ -234,7 +234,7 @@ Here, atoms `min_price/1` and `max_price/1` query what selected part has the min
 
 The call
 ```
-fclingo config_minmax_price.lp 0
+flingo config_minmax_price.lp 0
 ```
 yields
 ```
@@ -246,7 +246,7 @@ selected(frame) selected(bag) min_price(bag) max_price(frame) val(price(total),2
 When the bag is not selected, the frame has the minimum and maximum price. In the second answer, we see that the bag has the minimum price among selected parts, while the frame's price is the maximum.
 
 ### Choices
-Similarly to the language of clingo, fclingo allows for choice rules in the head of a rule. Choices have the following form:
+Similarly to the language of clingo, flingo allows for choice rules in the head of a rule. Choices have the following form:
 ```
 &fun{ lt1 :: ca1 : c1;...ltn :: can : cn} <> lt0
 ```
@@ -280,7 +280,7 @@ Using a choice, we can now express in one line, that we may freely select parts 
 
 Calling
 ```
-fclingo examples/config_pricelimit_choice.lp 0
+flingo examples/config_pricelimit_choice.lp 0
 ```
 outputs the three possible answers
 ```
@@ -303,7 +303,7 @@ Now we restrict the maximum price an individual part may have.
 
 Calling
 ```
-fclingo examples/config_pricelimit_choice.lp 0
+flingo examples/config_pricelimit_choice.lp 0
 ```
 gives us
 ```

@@ -18,20 +18,20 @@ def format(session):
         "--ignore-init-module-imports",
         "--remove-unused-variables",
         "-r",
-        "fclingo",
+        "flingo",
         "tests",
     ]
     if check:
         autoflake_args.remove("--in-place")
     session.run("autoflake", *autoflake_args)
 
-    isort_args = ["--profile", "black", "fclingo", "tests"]
+    isort_args = ["--profile", "black", "flingo", "tests"]
     if check:
         isort_args.insert(0, "--check")
         isort_args.insert(1, "--diff")
     session.run("isort", *isort_args)
 
-    black_args = ["fclingo", "tests"]
+    black_args = ["flingo", "tests"]
     if check:
         black_args.insert(0, "--check")
         black_args.insert(1, "--diff")
@@ -41,13 +41,13 @@ def format(session):
 @nox.session
 def lint_flake8(session):
     session.install("flake8", "flake8-black", "flake8-isort")
-    session.run("flake8", "fclingo")
+    session.run("flake8", "flingo")
 
 
 @nox.session
 def lint_pylint(session):
     session.install("-r", f"requirements.txt", "pylint")
-    session.run("pylint", "fclingo")
+    session.run("pylint", "flingo")
 
 
 @nox.session(python=PYTHON_VERSIONS)

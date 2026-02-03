@@ -9,7 +9,7 @@ env:
 
 jobs:
   build:
-    name: fclingo on ${{ matrix.os }}
+    name: flingo on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

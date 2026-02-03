@@ -5,8 +5,8 @@
 import clingo
 from clingo.symbol import parse_term
 
-from fclingo.astutil import match
-from fclingo.parsing import BODY, HEAD, PREFIX
+from flingo.astutil import match
+from flingo.parsing import BODY, HEAD, PREFIX
 
 AUX = "__aux"
 
