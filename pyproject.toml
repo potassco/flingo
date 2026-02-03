@@ -27,7 +27,7 @@ dev = ["typclingo[test,typecheck,lint_pylint]"]
 flingo = "flingo.__main__:main"
 
 [tool.setuptools.packages.find]
-where = ["flingo"]
+where = ["."]
 
 [tool.setuptools_scm]
 version_scheme = "python-simplified-semver"
