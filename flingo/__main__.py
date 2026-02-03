@@ -190,7 +190,7 @@ class flingoApp(clingo.Application):
             for rule in hbt.rules_to_add:
                 bld.add(Rule(loc, rule[0], rule[1]))
         end = time.time()
-        self.stats.rewrite_ast = end - start
+        self.stats.rewrite_ast = end - start # type: ignore
 
         control.add("base", [], THEORY)
         control.ground([("base", [])])
@@ -199,10 +199,10 @@ class flingoApp(clingo.Application):
         translator = Translator(control, self.config, self.stats)
         translator.translate(control.theory_atoms)
         end = time.time()
-        self.stats.translate_program = end - start
+        self.stats.translate_program = end - start # type: ignore
 
         self._theory.prepare(control)
-        control.solve(on_model=self.on_model, on_statistics=self._on_statistics)
+        control.solve(on_model=self.on_model, on_statistics=self._on_statistics) # type: ignore
 
 
 def main():

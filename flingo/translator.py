@@ -619,7 +619,7 @@ class Translator:
         clingcon_constraint.term.name = (
             "__sum" + BODY if BODY in atom.term.name else "__sum" + HEAD
         )
-        clingcon_constraint.literal = None
+        clingcon_constraint.literal = None # type: ignore
         clingcon_lit = self._add_clingcon_constraint(clingcon_constraint)
         defined = []
         for element in sum_con.elements:

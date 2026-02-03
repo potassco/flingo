@@ -1,7 +1,88 @@
 [build-system]
-requires = [
-    "setuptools",
-    "setuptools-scm",
-    "wheel",
-]
+requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "flingo"
+authors = [{ name = "Philipp Wanko", email = "wanko@cs.uni-potsdam.de" }]
+description = "flingo is a solver for Answer Set Programming (ASP) combined with founded conditional linear constraints"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+dynamic = ["version"]
+readme = "README.md"
+dependencies = ["clingo","clingcon"]
+
+[project.urls]
+Homepage = "https://github.com/potassco/flingo/"
+
+[project.optional-dependencies]
+format = ["black", "isort", "autoflake"]
+lint_pylint = ["pylint"]
+typecheck = ["types-setuptools", "mypy"]
+test = ["coverage[toml]"]
+doc = ["mkdocs", "mkdocs-material", "mkdocstrings[python]", "mkdoclingo"]
+dev = ["typclingo[test,typecheck,lint_pylint]"]
+
+[project.scripts]
+flingo = "flingo.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["flingo"]
+
+[tool.setuptools_scm]
+version_scheme = "python-simplified-semver"
+local_scheme = "no-local-version"
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.black]
+line-length = 120
+
+[tool.pylint.main]
+ignored-modules = ["clingo"]
+
+[tool.pylint."messages control"]
+disable = ["arguments-out-of-order"]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.design]
+max-args = 100
+max-attributes = 100
+max-bool-expr = 100
+max-branches = 100
+max-locals = 100
+max-parents = 100
+max-public-methods = 100
+max-returns = 100
+max-statements = 100
+min-public-methods = 1
+max-module-lines = 2000
+
+[tool.pylint.similarities]
+ignore-comments = true
+ignore-docstrings = true
+ignore-imports = true
+ignore-signatures = true
+
+[tool.pylint.basic]
+argument-rgx = "^[a-z][a-z0-9]*((_[a-z0-9]+)*_?)?$"
+variable-rgx = "^[a-z][a-z0-9]*((_[a-z0-9]+)*_?)?$"
+typealias-rgx = "^[A-Z][a-z0-9]*((_[a-z0-9]+)*_?)?$"
+good-names = ["_"]
+
+[tool.coverage.run]
+source = ["flingo", "tests"]
+omit = ["*/flingo/__main__.py"]
+
+[tool.coverage.report]
+exclude_lines = ["assert", "nocoverage"]
+
+[tool.ruff]
+ignore = ["E741"]  # ambiguous-variable-name (l, O, I)
+
+[tool.pyright]
+reportMissingModuleSource = "none"
