@@ -4,8 +4,16 @@ flingo is a solver for ASP modulo conditional linear constraints with founded va
 
 ## Installation
 
+Requires `python>=3.12` and `pip`.
+
+To install without checking out the repository:
 ```shell
-pip install . -r requirements.txt
+pip install git+https://github.com/potassco/flingo.git
+```
+
+To install from repository root:
+```shell
+pip install .
 ```
 
 ## Usage
@@ -315,6 +323,11 @@ selected(standardframe) selected(fancysaddle)
 The new program removes all combinations using the sports frame since this part violates the maximum allowed spending for one part.
 
 ## Development
+
+To install the development version of `flingo`
+```bash
+pip install -e .
+```
 
 To improve code quality, we run linters, and unit tests. The
 tools can be run using [nox]. We recommend installing nox using [pipx] to have
