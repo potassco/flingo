@@ -16,12 +16,12 @@ dependencies = ["clingo","clingcon"]
 Homepage = "https://github.com/potassco/flingo/"
 
 [project.optional-dependencies]
-format = ["black", "isort", "autoflake"]
+lint_ruff = ["ruff"]
 lint_pylint = ["pylint"]
 typecheck = ["types-setuptools", "mypy"]
 test = ["coverage[toml]"]
 doc = ["mkdocs", "mkdocs-material", "mkdocstrings[python]", "mkdoclingo"]
-dev = ["typclingo[test,typecheck,lint_pylint]"]
+dev = ["flingo[test,typecheck,lint_pylint,lint_ruff]"]
 
 [project.scripts]
 flingo = "flingo.__main__:main"
@@ -32,13 +32,6 @@ where = ["src"]
 [tool.setuptools_scm]
 version_scheme = "python-simplified-semver"
 local_scheme = "no-local-version"
-
-[tool.isort]
-profile = "black"
-line_length = 120
-
-[tool.black]
-line-length = 120
 
 [tool.pylint.main]
 ignored-modules = ["clingo"]
@@ -74,15 +67,31 @@ variable-rgx = "^[a-z][a-z0-9]*((_[a-z0-9]+)*_?)?$"
 typealias-rgx = "^[A-Z][a-z0-9]*((_[a-z0-9]+)*_?)?$"
 good-names = ["_"]
 
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "Q"]
+ignore = ["E741"]  # ambiguous-variable-name (l, O, I)
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["flingo"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
+[tool.pyright]
+reportMissingModuleSource = "none"
+
 [tool.coverage.run]
 source = ["flingo", "tests"]
 omit = ["*/flingo/__main__.py"]
 
 [tool.coverage.report]
 exclude_lines = ["assert", "nocoverage"]
-
-[tool.ruff]
-ignore = ["E741"]  # ambiguous-variable-name (l, O, I)
-
-[tool.pyright]
-reportMissingModuleSource = "none"
