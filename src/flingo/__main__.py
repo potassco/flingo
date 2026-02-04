@@ -53,7 +53,7 @@ class flingoApp(clingo.Application):
 
     def __init__(self):
         self.program_name = "flingo"
-        self.version = "0.1"
+        self.version = "v1.0.0"
         self.config = AppConfig(
             MIN_INT, MAX_INT, clingo.Flag(False), clingo.Flag(False), DEF
         )
