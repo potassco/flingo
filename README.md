@@ -6,6 +6,11 @@ flingo is a solver for ASP modulo conditional linear constraints with founded va
 
 Requires `python>=3.12` and `pip`.
 
+To install from PyPI:
+```shell
+pip install flingo
+```
+
 To install without checking out the repository:
 ```shell
 pip install git+https://github.com/potassco/flingo.git
