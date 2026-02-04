@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "flingo"
-version = "v1.0.0"
 authors = [{ name = "Philipp Wanko", email = "wanko@cs.uni-potsdam.de" }]
 description = "flingo is a solver for Answer Set Programming (ASP) combined with founded conditional linear constraints"
 requires-python = ">=3.12"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = [ "LICENSE" ]
+dynamic = ["version"]
 readme = "README.md"
 dependencies = ["clingo","clingcon"]
 
