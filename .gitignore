@@ -27,6 +27,7 @@ dmypy.json
 
 # unclassified
 build
+dist
 .coverage
 _build
 _autosummary

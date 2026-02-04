@@ -12,6 +12,13 @@ from flingo.parsing import HeadBodyTransformer
 
 
 class Config:
+    """
+    Configuration for the translator.
+    """
+
+    # NOTE: better use a dataclass instead
+    # pylint: disable=too-few-public-methods
+
     def __init__(self, max_int, min_int, print_trans, defined) -> None:
         self.max_int = max_int
         self.min_int = min_int
@@ -19,15 +26,13 @@ class Config:
         self.defined = defined
 
 
-class Solver(object):
+class Solver:
     """
     Simplistic solver for multi-shot solving.
     """
 
     def __init__(self, minint=-20, maxint=20, threads=8, options=()):
-        self.prg = clingo.Control(
-            ["0", "-t", str(threads)] + list(options), message_limit=0
-        )
+        self.prg = clingo.Control(["0", "-t", str(threads)] + list(options), message_limit=0)
         self.optimize = False
         self.bound = None
         self.propagator = ClingconTheory()
@@ -77,9 +82,7 @@ class Solver(object):
                 bld.add(Rule(loc, rule[0], rule[1]))
 
         self.prg.ground([("base", [])])
-        translator = Translator(
-            self.prg, Config(self.maxint, self.minint, False, DEF), Statistic()
-        )
+        translator = Translator(self.prg, Config(self.maxint, self.minint, False, DEF), Statistic())
         translator.translate(self.prg.theory_atoms)
 
         ret = []
