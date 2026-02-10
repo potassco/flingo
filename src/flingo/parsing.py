@@ -87,6 +87,8 @@ class HeadBodyTransformer(ast.Transformer):
     Class for tagging location of theory atoms.
     """
 
+    # pylint: disable=invalid-name
+
     def __init__(self) -> None:
         self.rules_to_add = []
 
@@ -97,9 +99,7 @@ class HeadBodyTransformer(ast.Transformer):
 
         element.terms = list(element.terms)
         if number is not None:
-            element.terms.append(
-                ast.SymbolicTerm(element.terms[0].location, clingo.Number(number))
-            )
+            element.terms.append(ast.SymbolicTerm(element.terms[0].location, clingo.Number(number)))
 
         return element
 
@@ -107,9 +107,7 @@ class HeadBodyTransformer(ast.Transformer):
         """
         Add variables to tuples of elements to ensure multiset semantics.
         """
-        elements = [
-            new_element for element in elements for new_element in element.unpool()
-        ]
+        elements = [new_element for element in elements for new_element in element.unpool()]
         if len(elements) == 1:
             return elements
 
@@ -119,6 +117,7 @@ class HeadBodyTransformer(ast.Transformer):
         """
         Visit all literals.
         """
+        assert in_lit is not None
         return lit.update(**self.visit_children(lit, True))
 
     def visit_TheoryAtom(self, atom, in_lit=False):
@@ -140,6 +139,9 @@ class HeadBodyTransformer(ast.Transformer):
         return atom
 
     def visit_Rule(self, rule):
+        """
+        Rewrite rules.
+        """
         head = rule.head
         location = head.location
         if head.ast_type == ast.ASTType.TheoryAtom:
@@ -147,31 +149,22 @@ class HeadBodyTransformer(ast.Transformer):
             for element in head.elements:
                 term = element.terms[0]
                 condition = element.condition
-                if term.ast_type == ast.ASTType.TheoryUnparsedTerm and "::" in str(
-                    term
-                ):
+                if term.ast_type == ast.ASTType.TheoryUnparsedTerm and "::" in str(term):
                     unparsed_terms = term.elements[:-1]
                     choice_atom = term.elements[-1].term
                     assert (
                         "::" == term.elements[-1].operators[0]
-                        and choice_atom.ast_type
-                        in [ast.ASTType.TheoryFunction, ast.ASTType.SymbolicTerm]
+                        and choice_atom.ast_type in [ast.ASTType.TheoryFunction, ast.ASTType.SymbolicTerm]
                         and len(element.terms) == 1
                     )
                     if choice_atom.ast_type == ast.ASTType.TheoryFunction:
                         choice_atom = ast.Literal(
                             location,
                             0,
-                            ast.SymbolicAtom(
-                                ast.Function(
-                                    location, choice_atom.name, choice_atom.arguments, 0
-                                )
-                            ),
+                            ast.SymbolicAtom(ast.Function(location, choice_atom.name, choice_atom.arguments, 0)),
                         )
                     else:
-                        choice_atom = ast.Literal(
-                            location, 0, ast.SymbolicAtom(choice_atom)
-                        )
+                        choice_atom = ast.Literal(location, 0, ast.SymbolicAtom(choice_atom))
                     choice = ast.Aggregate(
                         location,
                         None,

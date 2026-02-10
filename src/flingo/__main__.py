@@ -9,7 +9,7 @@ import clingo
 from clingcon import ClingconTheory
 from clingo.ast import Location, Position, ProgramBuilder, Rule, parse_files
 
-from flingo import THEORY, translator
+from flingo import THEORY
 from flingo.parsing import HeadBodyTransformer
 from flingo.translator import AUX, Translator
 
@@ -24,6 +24,9 @@ class Statistic:
     Class for statistics of flingo translation.
     """
 
+    # NOTE: better use a dataclass instead
+    # pylint: disable=too-few-public-methods
+
     def __init__(self):
         self.rewrite_ast = 0
         self.translate_program = 0
@@ -37,6 +40,9 @@ class AppConfig:
     Class for application specific options.
     """
 
+    # NOTE: better use a dataclass instead
+    # pylint: disable=too-few-public-methods,too-many-positional-arguments
+
     def __init__(self, min_int, max_int, print_translation, print_auxiliary, defined):
         self.print_aux = print_auxiliary
         self.print_trans = print_translation
@@ -45,7 +51,7 @@ class AppConfig:
         self.defined = defined
 
 
-class flingoApp(clingo.Application):
+class FlingoApp(clingo.Application):
     """
     Application class that can be used with `clingo.clingo_main` to solve AMT
     problems.
@@ -54,9 +60,7 @@ class flingoApp(clingo.Application):
     def __init__(self):
         self.program_name = "flingo"
         self.version = "v1.0.0"
-        self.config = AppConfig(
-            MIN_INT, MAX_INT, clingo.Flag(False), clingo.Flag(False), DEF
-        )
+        self.config = AppConfig(MIN_INT, MAX_INT, clingo.Flag(False), clingo.Flag(False), DEF)
         self.stats = Statistic()
         self._theory = ClingconTheory()
         self._answer = 0
@@ -68,23 +72,21 @@ class flingoApp(clingo.Application):
         self._theory.on_model(model)
 
     def print_model(self, model, printer):
+        """
+        Print the model in the desired format.
+        """
+        assert printer is not None
         shown = [
             str(atom)
             for atom in model.symbols(shown=True)
             if not (atom.name == self.config.defined and len(atom.arguments) == 1)
         ]
         valuation = [
-            "val("
-            + str(assignment.arguments[0])
-            + ","
-            + str(assignment.arguments[1])
-            + ")"
+            "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")"
             for assignment in model.symbols(theory=True)
             if assignment.name == CSP
             and len(assignment.arguments) == 2
-            and model.contains(
-                clingo.Function(self.config.defined, [assignment.arguments[0]])
-            )
+            and model.contains(clingo.Function(self.config.defined, [assignment.arguments[0]]))
             and not assignment.arguments[0].name == AUX
         ]
         shown.extend(valuation)
@@ -96,15 +98,9 @@ class flingoApp(clingo.Application):
                 if atom.name == self.config.defined and len(atom.arguments) == 1
             ]
             auxvars = [
-                "val("
-                + str(assignment.arguments[0])
-                + ","
-                + str(assignment.arguments[1])
-                + ")"
+                "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")"
                 for assignment in model.symbols(theory=True)
-                if assignment.name == CSP
-                and len(assignment.arguments) == 2
-                and assignment.arguments[0].name == AUX
+                if assignment.name == CSP and len(assignment.arguments) == 2 and assignment.arguments[0].name == AUX
             ]
             defs.extend(auxvars)
             print(" ".join(defs))
@@ -129,21 +125,19 @@ class flingoApp(clingo.Application):
         options.add_flag(
             group,
             "print-auxvars,@2",
-            "Print value of auxiliary variables [{}]".format(
-                self._flag_str(self.config.print_aux)
-            ),
+            f"Print value of auxiliary variables [{self._flag_str(self.config.print_aux)}]",
             self.config.print_aux,
         )
         options.add_flag(
             group,
             "print-translation,@2",
-            "Print translation [{}]".format(self._flag_str(self.config.print_trans)),
+            f"Print translation [{self._flag_str(self.config.print_trans)}]",
             self.config.print_trans,
         )
         options.add(
             group,
             "defined-predicate",
-            "Name of the defined predicate [{}]".format(self.config.defined),
+            f"Name of the defined predicate [{self.config.defined}]",
             self._parse_defined_predicate,
         )
 
@@ -163,7 +157,7 @@ class flingoApp(clingo.Application):
     def _read(self, path):
         if path == "-":
             return sys.stdin.read()
-        with open(path) as file_:
+        with open(path, encoding="utf-8") as file_:
             return file_.read()
 
     def main(self, control, files):
@@ -190,7 +184,7 @@ class flingoApp(clingo.Application):
             for rule in hbt.rules_to_add:
                 bld.add(Rule(loc, rule[0], rule[1]))
         end = time.time()
-        self.stats.rewrite_ast = end - start # type: ignore
+        self.stats.rewrite_ast = end - start  # type: ignore
 
         control.add("base", [], THEORY)
         control.ground([("base", [])])
@@ -199,10 +193,10 @@ class flingoApp(clingo.Application):
         translator = Translator(control, self.config, self.stats)
         translator.translate(control.theory_atoms)
         end = time.time()
-        self.stats.translate_program = end - start # type: ignore
+        self.stats.translate_program = end - start  # type: ignore
 
         self._theory.prepare(control)
-        control.solve(on_model=self.on_model, on_statistics=self._on_statistics) # type: ignore
+        control.solve(on_model=self.on_model, on_statistics=self._on_statistics)  # type: ignore
 
 
 def main():
@@ -211,7 +205,7 @@ def main():
     """
 
     arguments = sys.argv[1:]
-    sys.exit(int(clingo.clingo_main(flingoApp(), arguments)))
+    sys.exit(int(clingo.clingo_main(FlingoApp(), arguments)))
 
 
 if __name__ == "__main__":

@@ -2,55 +2,44 @@ import os
 
 import nox
 
-nox.options.sessions = "lint_flake8", "lint_pylint", "test"
+nox.options.sessions = "lint_ruff", "lint_pylint", "test"
 
 PYTHON_VERSIONS = ["3.12"] if "GITHUB_ACTIONS" in os.environ else None
 
 
 @nox.session
-def format(session):
-    session.install("-e", ".[format]")
-    check = "check" in session.posargs
-
-    autoflake_args = [
-        "--in-place",
-        "--imports=fillname",
-        "--ignore-init-module-imports",
-        "--remove-unused-variables",
-        "-r",
-        "flingo",
-        "tests",
-    ]
-    if check:
-        autoflake_args.remove("--in-place")
-    session.run("autoflake", *autoflake_args)
-
-    isort_args = ["--profile", "black", "flingo", "tests"]
-    if check:
-        isort_args.insert(0, "--check")
-        isort_args.insert(1, "--diff")
-    session.run("isort", *isort_args)
-
-    black_args = ["flingo", "tests"]
-    if check:
-        black_args.insert(0, "--check")
-        black_args.insert(1, "--diff")
-    session.run("black", *black_args)
-
-
-@nox.session
-def lint_flake8(session):
-    session.install("flake8", "flake8-black", "flake8-isort")
-    session.run("flake8", "src/flingo")
+def lint_ruff(session):
+    """
+    Check code style using Ruff.
+    """
+    session.install("-e", ".[lint_ruff]")
+    session.run("ruff", "check")
+    session.run("ruff", "format", "--diff")
 
 
 @nox.session
 def lint_pylint(session):
-    session.install("-e", ".", "pylint")
-    session.run("pylint", "flingo")
+    """
+    Check code style using Pylint.
+    """
+    session.install("-e", ".[lint_pylint]")
+    session.run("pylint", "src", "tests")
 
 
 @nox.session(python=PYTHON_VERSIONS)
 def test(session):
-    session.install("-e", ".")
-    session.run("python", "-m", "unittest", "discover", "-v")
+    """
+    Run the test suite with coverage.
+    """
+    session.install("-e", ".[test]")
+    session.run("coverage", "run", "-m", "unittest", "discover", "-v")
+    # NOTE: better aim for 100% coverage, but 87% is the current level.
+    session.run("coverage", "report", "-m", "--fail-under=87")
+
+
+@nox.session
+def dev(session):
+    """
+    Install all development dependencies.
+    """
+    session.install("-e", ".[dev]")
