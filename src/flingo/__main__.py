@@ -65,11 +65,26 @@ class FlingoApp(clingo.Application):
         self._theory = ClingconTheory()
         self._answer = 0
 
-    def on_model(self, model):
+    def __on_model(self, model):
         """
         Report models to the propagator.
         """
         self._theory.on_model(model)
+        defined_variables = {
+            atom.arguments[0]
+            for atom in model.symbols(shown=True)
+            if atom.name == self.config.defined and len(atom.arguments) == 1
+        }
+        valuation_symbols = []
+        for assignment in model.symbols(theory=True):
+            if assignment.name != CSP or len(assignment.arguments) != 2:
+                continue
+            variable = assignment.arguments[0]
+            value = assignment.arguments[1]
+            if variable.name == AUX or variable not in defined_variables:
+                continue
+            valuation_symbols.append(clingo.Function("val", [variable, value]))
+        model.extend(valuation_symbols)
 
     def print_model(self, model, printer):
         """
@@ -81,13 +96,14 @@ class FlingoApp(clingo.Application):
             for atom in model.symbols(shown=True)
             if not (atom.name == self.config.defined and len(atom.arguments) == 1)
         ]
+        shown_set = set(shown)
         valuation = [
             "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")"
             for assignment in model.symbols(theory=True)
             if assignment.name == CSP
             and len(assignment.arguments) == 2
-            and model.contains(clingo.Function(self.config.defined, [assignment.arguments[0]]))
-            and not assignment.arguments[0].name == AUX
+            and assignment.arguments[0].name != AUX
+            and "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")" not in shown_set
         ]
         shown.extend(valuation)
         print(" ".join(shown))
@@ -196,7 +212,7 @@ class FlingoApp(clingo.Application):
         self.stats.translate_program = end - start  # type: ignore
 
         self._theory.prepare(control)
-        control.solve(on_model=self.on_model, on_statistics=self._on_statistics)  # type: ignore
+        control.solve(on_model=self.__on_model, on_statistics=self._on_statistics)  # type: ignore
 
 
 def main():
