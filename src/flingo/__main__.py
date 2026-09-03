@@ -73,9 +73,10 @@ class FlingoApp(clingo.Application):
         self._theory.on_model(model)
         defined_variables = {
             atom.arguments[0]
-            for atom in model.symbols(shown=True)
+            for atom in model.symbols(atoms=True)
             if atom.match(self.config.defined,1)
         }
+        # print(model.symbols(shown=True,atoms=True))
         valuation_symbols = []
         for assignment in model.symbols(theory=True):
             if not assignment.match(CSP,2):
@@ -91,53 +92,32 @@ class FlingoApp(clingo.Application):
         Print the model in the desired format.
         """
         assert printer is not None
-        shown_symbols = model.symbols(shown=True)
-        sys.stdout.write(" ".join(str(symbol) for symbol in sorted(shown_symbols)))
-        sys.stdout.write("\n")
+        shown = []
+        # Shown symbols excluding _def
+        shown += [str(symbol) for symbol in model.symbols(shown=True) if not symbol.match(self.config.defined, 1)]
 
-        valuation = set()
-        # cost = None
-        theory_symbols = model.symbols(theory=True)
-        print(theory_symbols)
-        for symbol in sorted(theory_symbols):
+        # Valuation symbols extracted for the extended ones in __on_model
+        for symbol in sorted(model.symbols(theory=True)):
             if symbol.match(VAL, 2):
                 name, value = symbol.arguments
-                valuation.add(f"val({name},{value})")
+                shown.append(f"val({name},{value})")
 
-        sys.stdout.write(" ".join(sorted(valuation)))
-        sys.stdout.write("\n")
-
-
-        # shown = [
-        #     str(atom)
-        #     for atom in model.symbols(shown=True)
-        #     if not (atom.name == self.config.defined and len(atom.arguments) == 1)
-        # ]
-        # shown_set = set(shown_symbols)
-        # valuation = [
-        #     "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")"
-        #     for assignment in model.symbols(theory=True)
-        #     if assignment.name == CSP
-        #     and len(assignment.arguments) == 2
-        #     and assignment.arguments[0].name != AUX
-        #     and "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")" not in shown_set
-        # ]
-        # shown.extend(valuation)
-        # print(" ".join(shown))
+        # Auxiliary symbols
         if self.config.print_aux:
-            defs = [
+            shown += [
                 str(atom)
-                for atom in shown_symbols
+                for atom in model.symbols(atoms=True)
                 if atom.match(self.config.defined, 1)
             ]
             auxvars = [
                 "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")"
-                for assignment in theory_symbols
+                for assignment in model.symbols(theory=True)
                 if assignment.match(CSP, 2) and assignment.arguments[0].name == AUX
             ]
-            defs.extend(auxvars)
-            sys.stdout.write(" ".join(defs))
+            shown.extend(auxvars)
 
+        sys.stdout.write(" ".join(shown))
+        sys.stdout.write("\n")
         sys.stdout.flush()
 
     def _flag_str(self, flag):
