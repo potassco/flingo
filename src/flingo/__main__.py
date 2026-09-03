@@ -72,14 +72,12 @@ class FlingoApp(clingo.Application):
         """
         self._theory.on_model(model)
         defined_variables = {
-            atom.arguments[0]
-            for atom in model.symbols(atoms=True)
-            if atom.match(self.config.defined,1)
+            atom.arguments[0] for atom in model.symbols(atoms=True) if atom.match(self.config.defined, 1)
         }
         # print(model.symbols(shown=True,atoms=True))
         valuation_symbols = []
         for assignment in model.symbols(theory=True):
-            if not assignment.match(CSP,2):
+            if not assignment.match(CSP, 2):
                 continue
             variable, value = assignment.arguments
             if variable.name == AUX or variable not in defined_variables:
@@ -104,11 +102,7 @@ class FlingoApp(clingo.Application):
 
         # Auxiliary symbols
         if self.config.print_aux:
-            shown += [
-                str(atom)
-                for atom in model.symbols(atoms=True)
-                if atom.match(self.config.defined, 1)
-            ]
+            shown += [str(atom) for atom in model.symbols(atoms=True) if atom.match(self.config.defined, 1)]
             auxvars = [
                 "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")"
                 for assignment in model.symbols(theory=True)
