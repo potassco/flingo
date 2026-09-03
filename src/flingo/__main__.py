@@ -156,7 +156,7 @@ class FlingoApp(clingo.Application):
             self._parse_defined_predicate,
         )
 
-    def _on_statistics(self, step, akku):
+    def __on_statistics(self, step, akku):
         self._theory.on_statistics(step, akku)
         akku["flingo"] = {}
         flingo = akku["flingo"]
@@ -211,7 +211,7 @@ class FlingoApp(clingo.Application):
         self.stats.translate_program = end - start  # type: ignore
 
         self._theory.prepare(control)
-        control.solve(on_model=self.__on_model, on_statistics=self._on_statistics)  # type: ignore
+        control.solve(on_model=self.__on_model, on_statistics=self.__on_statistics)  # type: ignore
 
 
 def main():
