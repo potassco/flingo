@@ -4,9 +4,14 @@
     * [Help](use/help.md)
 * Reference
     * [Reference](reference/index.md)
-    * [Encodings](reference/encodings/index.md)
-    * [API](reference/api/index.md)
     * [CLI](reference/cli/index.md)
+    * Language constructs
+        * [Language](reference/language/index.md)
+        * [Sum under clingo semantics ](reference/language/sum.md)
+        * [Sum under strict semantics](reference/language/sus.md)
+        * [Minimum and maximum aggregates](reference/language/minmax.md)
+        * [Assignments](reference/language/in.md)
+        * [Defined](reference/language/def.md)
 * Examples
     * [Examples](examples/index.md)
 * Community

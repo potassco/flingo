@@ -8,10 +8,10 @@ authors = [{ name = "Philipp Wanko", email = "wanko@cs.uni-potsdam.de" }]
 description = "flingo is a solver for Answer Set Programming (ASP) combined with founded conditional linear constraints"
 requires-python = ">=3.12"
 license = "MIT"
-license-files = [ "LICENSE" ]
+license-files = ["LICENSE"]
 dynamic = ["version"]
 readme = "README.md"
-dependencies = ["clingo","clingcon"]
+dependencies = ["clingo", "clingcon"]
 
 [project.urls]
 Homepage = "https://github.com/potassco/flingo/"
@@ -21,7 +21,13 @@ lint_ruff = ["ruff"]
 lint_pylint = ["pylint"]
 typecheck = ["types-setuptools", "mypy"]
 test = ["coverage[toml]"]
-doc = ["mkdocs", "mkdocs-material", "mkdocstrings[python]", "mkdoclingo"]
+doc = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdoclingo",
+    "mkdocs-literate-nav",
+]
 dev = ["flingo[test,typecheck,lint_pylint,lint_ruff]"]
 
 [project.scripts]
@@ -75,7 +81,7 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "Q"]
-ignore = ["E741"]  # ambiguous-variable-name (l, O, I)
+ignore = ["E741"]                  # ambiguous-variable-name (l, O, I)
 fixable = ["ALL"]
 unfixable = []
 
