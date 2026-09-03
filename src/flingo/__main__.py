@@ -17,6 +17,7 @@ MAX_INT = 1073741823
 MIN_INT = -1073741823
 CSP = "__csp"
 DEF = "__def"
+VAL = "__val"
 
 
 class Statistic:
@@ -73,17 +74,16 @@ class FlingoApp(clingo.Application):
         defined_variables = {
             atom.arguments[0]
             for atom in model.symbols(shown=True)
-            if atom.name == self.config.defined and len(atom.arguments) == 1
+            if atom.match(self.config.defined,1)
         }
         valuation_symbols = []
         for assignment in model.symbols(theory=True):
-            if assignment.name != CSP or len(assignment.arguments) != 2:
+            if not assignment.match(CSP,2):
                 continue
-            variable = assignment.arguments[0]
-            value = assignment.arguments[1]
+            variable, value = assignment.arguments
             if variable.name == AUX or variable not in defined_variables:
                 continue
-            valuation_symbols.append(clingo.Function("val", [variable, value]))
+            valuation_symbols.append(clingo.Function(VAL, [variable, value]))
         model.extend(valuation_symbols)
 
     def print_model(self, model, printer):
@@ -91,35 +91,54 @@ class FlingoApp(clingo.Application):
         Print the model in the desired format.
         """
         assert printer is not None
-        shown = [
-            str(atom)
-            for atom in model.symbols(shown=True)
-            if not (atom.name == self.config.defined and len(atom.arguments) == 1)
-        ]
-        shown_set = set(shown)
-        valuation = [
-            "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")"
-            for assignment in model.symbols(theory=True)
-            if assignment.name == CSP
-            and len(assignment.arguments) == 2
-            and assignment.arguments[0].name != AUX
-            and "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")" not in shown_set
-        ]
-        shown.extend(valuation)
-        print(" ".join(shown))
+        shown_symbols = model.symbols(shown=True)
+        sys.stdout.write(" ".join(str(symbol) for symbol in sorted(shown_symbols)))
+        sys.stdout.write("\n")
+
+        valuation = set()
+        # cost = None
+        theory_symbols = model.symbols(theory=True)
+        print(theory_symbols)
+        for symbol in sorted(theory_symbols):
+            if symbol.match(VAL, 2):
+                name, value = symbol.arguments
+                valuation.add(f"val({name},{value})")
+
+        sys.stdout.write(" ".join(sorted(valuation)))
+        sys.stdout.write("\n")
+
+
+        # shown = [
+        #     str(atom)
+        #     for atom in model.symbols(shown=True)
+        #     if not (atom.name == self.config.defined and len(atom.arguments) == 1)
+        # ]
+        # shown_set = set(shown_symbols)
+        # valuation = [
+        #     "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")"
+        #     for assignment in model.symbols(theory=True)
+        #     if assignment.name == CSP
+        #     and len(assignment.arguments) == 2
+        #     and assignment.arguments[0].name != AUX
+        #     and "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")" not in shown_set
+        # ]
+        # shown.extend(valuation)
+        # print(" ".join(shown))
         if self.config.print_aux:
             defs = [
                 str(atom)
-                for atom in model.symbols(shown=True)
-                if atom.name == self.config.defined and len(atom.arguments) == 1
+                for atom in shown_symbols
+                if atom.match(self.config.defined, 1)
             ]
             auxvars = [
                 "val(" + str(assignment.arguments[0]) + "," + str(assignment.arguments[1]) + ")"
-                for assignment in model.symbols(theory=True)
-                if assignment.name == CSP and len(assignment.arguments) == 2 and assignment.arguments[0].name == AUX
+                for assignment in theory_symbols
+                if assignment.match(CSP, 2) and assignment.arguments[0].name == AUX
             ]
             defs.extend(auxvars)
-            print(" ".join(defs))
+            sys.stdout.write(" ".join(defs))
+
+        sys.stdout.flush()
 
     def _flag_str(self, flag):
         return "yes" if flag else "no"
